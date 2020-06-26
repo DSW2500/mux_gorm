@@ -50,9 +50,10 @@ func main() {
 	defer db.Close()
 	fmt.Println("DB has been opened ")
 	// db.CreateTable(&model.User{})
-	// db.Model(&model.Bank{}).AddForeignKey("user_id", "users(id)", "RESTRICT", "CASCADE")
+	// db.Model(&models.Bank{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
 
 	// db.CreateTable(&model.Bank{})
+
 	// db.Create(myUser)
 	// db.Create(myUser2)
 	// db.DropTable(&model.User{})
@@ -74,7 +75,7 @@ func main() {
 
 	log.Fatal(srv.ListenAndServe())
 	fmt.Println("The service is working!")
-
+	// db.AutoMigrate(&models.User{}, &models.Bank{})
 }
 
 // 	fmt.Println("Choices: \n1.Create\n2.Read\n3.Update\n4.Delete\nPress 5 to quit!")
@@ -143,4 +144,3 @@ func main() {
 // // 	Type:   "Business",
 // // }
 // // db.Create(account2)
-// //db.AutoMigrate(&Customer{}, &Order{})

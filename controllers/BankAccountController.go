@@ -137,6 +137,38 @@ func (bac *BankAccountController) CreateBankData(w http.ResponseWriter, r *http.
 	}
 }
 
+//UpdateUserData :
+func (bac *BankAccountController) UpdateUserData(w http.ResponseWriter, r *http.Request) {
+	user := model.User{}
+	err := UnmarshalJSON(r, &user)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = bac.service.UpdateUser(&user)
+	if err != nil {
+		fmt.Println(err)
+
+	}
+
+}
+
+//DeleteUser :
+func (bac *BankAccountController) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	user := model.User{}
+	err := UnmarshalJSON(r, &user)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = bac.service.DeleteUserAccount(&user)
+	if err != nil {
+		fmt.Println(err)
+
+	}
+
+}
+
 //UnmarshalJSON :
 func UnmarshalJSON(r *http.Request, target interface{}) error {
 	if r.Body == nil {
@@ -167,7 +199,9 @@ func (bac *BankAccountController) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/bank/user/id/{id}/bankAccount", bac.GetUserIDBankAccounts).Methods("GET")
 	router.HandleFunc("/bank/user/id/{id}/bankAccount/{bankID}", bac.GetBankAccountFromUser).Methods("GET")
 	router.HandleFunc("/bank/user/create", bac.CreateUserData).Methods("POST")
-	router.HandleFunc("/bank/user/bank/create", bac.CreateBankData).Methods("POST")
+	router.HandleFunc("/bank/user/create", bac.CreateBankData).Methods("POST")
+	router.HandleFunc("/bank/user/update", bac.UpdateUserData).Methods("PUT")
+	router.HandleFunc("/bank/user/delete", bac.DeleteUser).Methods("DELETE")
 }
 
 //write to header func

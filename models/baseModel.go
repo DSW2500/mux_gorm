@@ -11,4 +11,5 @@ type Base struct {
 	ID        uuid.UUID `gorm:"primary_key"`
 	CreatedOn *time.Time
 	UpdatedOn *time.Time
+	DeletedAt *time.Time
 }

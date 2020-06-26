@@ -54,24 +54,44 @@ func (service *BankAccountService) AddBankAccount(model *models.Bank) error {
 	return err
 }
 
-//Delete :
-func (service *BankAccountService) DeleteBankAccount(input *models.Bank) error {
+//DeleteBankAccount :
+func (service *BankAccountService) DeleteBankAccount(input interface{}) error {
 	uow := repository.NewUnitOfWork(service.DB, false)
-	if err := service.Repository.Delete(uow, &input); err != nil {
+	if err := service.Repository.Delete(uow, input); err != nil {
 		uow.Complete()
 	}
 	uow.Commit()
-	uow.Complete()
+
+	return uow.DB.Error
+}
+
+//DeleteUserAccount :
+func (service *BankAccountService) DeleteUserAccount(user *models.User) error {
+
+	uow := repository.NewUnitOfWork(service.DB, false)
+	// pow := make([]string, 0)
+	var banks []models.Bank
+	if err := service.ReadByUserID(&banks, user.ID); err != nil {
+		uow.Complete()
+	}
+	for _, accounts := range banks {
+		if err := service.Repository.Delete(uow, accounts); err != nil {
+			uow.Complete()
+		}
+	}
+	if err := service.Repository.Delete(uow, user); err != nil {
+		uow.Complete()
+	}
+	uow.Commit()
 	return uow.DB.Error
 }
 
 //ReadByID : Used for calling individual bank accounts!
-func (service *BankAccountService) ReadByID(input interface{}, id uuid.UUID) error {
+func (service *BankAccountService) ReadByID(input interface{}, id interface{}) error {
 	pod := make([]string, 0)
 	uow := repository.NewUnitOfWork(service.DB, false)
 	if err := service.Repository.GetByID(uow, input, id, pod); err != nil {
 		return err
-		uow.Complete()
 
 	}
 	uow.Complete()
@@ -84,7 +104,6 @@ func (service *BankAccountService) ReadByUserID(input interface{}, id interface{
 	uow := repository.NewUnitOfWork(service.DB, false)
 	if err := service.Repository.GetAllForUsersID(uow, input, id, []string{}); err != nil {
 		return err
-		uow.Complete()
 
 	}
 	uow.Complete()
@@ -105,8 +124,19 @@ func (service *BankAccountService) GetAllAccounts(ba interface{}) error {
 	return err
 }
 
-//Update :
-func (service *BankAccountService) Update(input *models.Bank) error {
+//UpdateBank :
+func (service *BankAccountService) UpdateBank(input *models.Bank) error {
+	uow := repository.NewUnitOfWork(service.DB, false)
+	if err := service.Repository.Update(uow, input); err != nil {
+		uow.Complete()
+	}
+	uow.Commit()
+	uow.Complete()
+	return uow.DB.Error
+}
+
+//UpdateUser :
+func (service *BankAccountService) UpdateUser(input *models.User) error {
 	uow := repository.NewUnitOfWork(service.DB, false)
 	if err := service.Repository.Update(uow, input); err != nil {
 		uow.Complete()

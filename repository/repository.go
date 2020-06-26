@@ -96,7 +96,7 @@ func (repository *GormRepository) GetAllForUsersID(uow *UnitOfWork, out interfac
 	for _, association := range preloadAssociations {
 		db = db.Preload(association)
 	}
-	return db.Where("user_id= ?", input).Find(out).Error
+	return db.Where("user_id=?", input).Find(out).Error
 }
 
 // Add specified Entity
