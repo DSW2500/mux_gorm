@@ -66,20 +66,21 @@ func (service *BankAccountService) DeleteBankAccount(input interface{}) error {
 }
 
 //DeleteUserAccount :
-func (service *BankAccountService) DeleteUserAccount(user *models.User) error {
-
+func (service *BankAccountService) DeleteUserAccount(id uuid.UUID) error {
+	var user models.User
+	user.ID = id
 	uow := repository.NewUnitOfWork(service.DB, false)
 	// pow := make([]string, 0)
 	var banks []models.Bank
-	if err := service.ReadByUserID(&banks, user.ID); err != nil {
+	if err := service.ReadByUserID(&banks, id); err != nil {
 		uow.Complete()
 	}
 	for _, accounts := range banks {
-		if err := service.Repository.Delete(uow, accounts); err != nil {
+		if err := service.Repository.Delete(uow, &accounts); err != nil {
 			uow.Complete()
 		}
 	}
-	if err := service.Repository.Delete(uow, user); err != nil {
+	if err := service.Repository.Delete(uow, &user); err != nil {
 		uow.Complete()
 	}
 	uow.Commit()
