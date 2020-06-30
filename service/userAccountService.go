@@ -99,6 +99,6 @@ func (service *UserAccountService) UpdateUser(input *models.User) error {
 		uow.Complete()
 	}
 	uow.Commit()
-	uow.Complete()
+
 	return uow.DB.Error
 }
