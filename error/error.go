@@ -1,4 +1,4 @@
-package checkerror
+package error
 
 import (
 	"errors"
@@ -7,21 +7,22 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type errortype struct {
+type ValidationError struct {
 	errorMessage string
 }
 
-func NewErrorType() errortype {
-	return errortype{
+//NewValidationError :
+func NewValidationError() ValidationError {
+	return ValidationError{
 		errorMessage: "",
 	}
 }
-func sendError(err errortype) error {
+func sendError(err ValidationError) error {
 	return errors.New(err.errorMessage)
 
 }
 
-func (err errortype) CheckUserNameError(user *models.User) error {
+func (err ValidationError) CheckUserNameError(user *models.User) error {
 
 	if user.Name == "" {
 		err.errorMessage = "User name is empty"
@@ -30,7 +31,7 @@ func (err errortype) CheckUserNameError(user *models.User) error {
 	return nil
 }
 
-func (err errortype) CheckBankNameError(bank *models.Bank) error {
+func (err ValidationError) CheckBankNameError(bank *models.Bank) error {
 
 	if bank.Name == "" {
 		err.errorMessage = "Bank name is empty"
@@ -39,7 +40,7 @@ func (err errortype) CheckBankNameError(bank *models.Bank) error {
 	return nil
 }
 
-func (err errortype) CheckIDError(id uuid.UUID) error {
+func (err ValidationError) CheckIDError(id uuid.UUID) error {
 	tmp := id.String()
 	if tmp == "" {
 		err.errorMessage = "ID is empty"

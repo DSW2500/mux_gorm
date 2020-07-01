@@ -1,7 +1,7 @@
 package service
 
 import (
-	"gorm/checkerror"
+	errors "gorm/error"
 	models "gorm/models"
 	"gorm/repository"
 
@@ -25,7 +25,7 @@ func NewUserAccountService(db *gorm.DB, repo *repository.GormRepository) *UserAc
 
 //AddUserAccount :
 func (service *UserAccountService) AddUserAccount(model *models.User) error {
-	errorCheck := checkerror.NewErrorType()
+	errorCheck := errors.NewValidationError()
 	if err := errorCheck.CheckUserNameError(model); err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (service *UserAccountService) GetAllUserAccounts(user *[]models.User) error
 
 //DeleteUserAccount :
 func (service *UserAccountService) DeleteUserAccount(id uuid.UUID) error {
-	errorCheck := checkerror.NewErrorType()
+	errorCheck := errors.NewValidationError()
 	if err := errorCheck.CheckIDError(id); err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (service *UserAccountService) DeleteUserAccount(id uuid.UUID) error {
 
 //GetUserByID : Gets user by ID
 func (service *UserAccountService) GetUserByID(input *models.User, id uuid.UUID) error {
-	errorCheck := checkerror.NewErrorType()
+	errorCheck := errors.NewValidationError()
 	if err := errorCheck.CheckUserNameError(input); err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func (service *UserAccountService) GetUserByID(input *models.User, id uuid.UUID)
 
 //UpdateUser :
 func (service *UserAccountService) UpdateUser(input *models.User) error {
-	errorCheck := checkerror.NewErrorType()
+	errorCheck := errors.NewValidationError()
 	if err := errorCheck.CheckUserNameError(input); err != nil {
 		return err
 	}

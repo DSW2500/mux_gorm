@@ -1,7 +1,7 @@
 package service
 
 import (
-	"gorm/checkerror"
+	errors "gorm/error"
 	models "gorm/models"
 	"gorm/repository"
 
@@ -27,7 +27,7 @@ func NewBankAccountService(db *gorm.DB, repository *repository.GormRepository) *
 
 //AddBankAccount :
 func (service *BankAccountService) AddBankAccount(model *models.Bank) error {
-	errorCheck := checkerror.NewErrorType()
+	errorCheck := errors.NewValidationError()
 	if err := errorCheck.CheckBankNameError(model); err != nil {
 		return err
 	}
