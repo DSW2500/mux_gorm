@@ -65,7 +65,8 @@ func (service *UserAccountService) DeleteUserAccount(id uuid.UUID) error {
 	uow := repository.NewUnitOfWork(service.DB, false)
 	// pow := make([]string, 0)
 	var banks []models.Bank
-	if err := service.ReadByUserID(&banks, id); err != nil {
+	pow := make([]string, 0)
+	if err := service.Repository.GetAllForUserID(uow, &banks, id, pow); err != nil {
 		uow.Complete()
 	}
 	for _, accounts := range banks {
@@ -80,11 +81,11 @@ func (service *UserAccountService) DeleteUserAccount(id uuid.UUID) error {
 	return uow.DB.Error
 }
 
-//ReadByUserID : Will get all accounts related to specified user
-func (service *UserAccountService) ReadByUserID(input interface{}, id interface{}) error {
+//GetUserByID : Gets user by ID
+func (service *UserAccountService) GetUserByID(input interface{}, id interface{}) error {
 
 	uow := repository.NewUnitOfWork(service.DB, false)
-	if err := service.Repository.GetAllForUsersID(uow, input, id, []string{}); err != nil {
+	if err := service.Repository.GetByID(uow, input, id, []string{}); err != nil {
 		return err
 
 	}

@@ -2,8 +2,9 @@ package controllers
 
 import (
 	"gorm/models"
-	model "gorm/models"
+
 	"gorm/service"
+	"gorm/web"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -35,8 +36,8 @@ func (uas *UserAccountController) RegisterRoutes(router *mux.Router) {
 
 //CreateUserData :
 func (uas *UserAccountController) CreateUserData(w http.ResponseWriter, r *http.Request) {
-	user := model.User{}
-	err := UnmarshalJSON(r, &user)
+	user := models.User{}
+	err := web.UnmarshalJSON(r, &user)
 	if err != nil {
 		x := []byte(err.Error())
 		w.Write(x)
@@ -52,8 +53,8 @@ func (uas *UserAccountController) CreateUserData(w http.ResponseWriter, r *http.
 
 //UpdateUserData :
 func (uas *UserAccountController) UpdateUserData(w http.ResponseWriter, r *http.Request) {
-	user := model.User{}
-	err := UnmarshalJSON(r, &user)
+	user := models.User{}
+	err := web.UnmarshalJSON(r, &user)
 	if err != nil {
 
 		x := []byte(err.Error())
@@ -88,11 +89,11 @@ func (uas *UserAccountController) DeleteUser(w http.ResponseWriter, r *http.Requ
 
 //GetAllUsers : Gets all the users available
 func (uas *UserAccountController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users := []model.User{}
+	users := []models.User{}
 
-	uas.service.GetAllUserAccounts((&users))
+	uas.service.GetAllUserAccounts(&users)
 	for i := range users { // each user
-		banks := []model.Bank{}
+		banks := []models.Bank{}
 
 		bac := &service.BankAccountService{
 			DB:         uas.service.DB,
@@ -104,7 +105,7 @@ func (uas *UserAccountController) GetAllUsers(w http.ResponseWriter, r *http.Req
 			users[i].Accounts = append(users[i].Accounts, val)
 		}
 	}
-	RespondJSON(&w, http.StatusOK, users)
+	web.RespondJSON(&w, http.StatusOK, users)
 }
 
 //GetUserByID : gets a user by specified id
@@ -113,8 +114,8 @@ func (uas *UserAccountController) GetUserByID(w http.ResponseWriter, r *http.Req
 	// id, _ := uuid.FromString(path)
 	val := mux.Vars(r)
 	id := val["id"]
-	user := model.User{}
-	uas.service.ReadByUserID(&user, id)
+	user := models.User{}
+	uas.service.GetUserByID(&user, id)
 	// each user
 	var banks []models.Bank
 
@@ -128,5 +129,5 @@ func (uas *UserAccountController) GetUserByID(w http.ResponseWriter, r *http.Req
 		user.Accounts = append(user.Accounts, val)
 	}
 
-	RespondJSON(&w, http.StatusOK, user)
+	web.RespondJSON(&w, http.StatusOK, user)
 }

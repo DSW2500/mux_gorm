@@ -53,22 +53,13 @@ func NewRepository() *GormRepository {
 	return &GormRepository{}
 }
 
-// Get a record for specified entity with specific id : individual bank account
+//GetByID : Get a record for specified entity with specific id : individual bank/user account
 func (repository *GormRepository) GetByID(uow *UnitOfWork, out interface{}, id interface{}, preloadAssociations []string) error {
 	db := uow.DB
 	for _, association := range preloadAssociations {
 		db = db.Preload(association)
 	}
 	return db.First(out, "id = ?", id).Error
-}
-
-// Get a record by using UserId
-func (repository *GormRepository) GetByUserID(uow *UnitOfWork, out interface{}, id interface{}, preloadAssociations []string) error {
-	db := uow.DB
-	for _, association := range preloadAssociations {
-		db = db.Preload(association)
-	}
-	return db.First(out, "user_id = ?", id).Error
 }
 
 // GetAll retrieves all the records for a specified entity and returns it
@@ -81,17 +72,8 @@ func (repository *GormRepository) GetAll(uow *UnitOfWork, bank interface{}, prel
 	return db.Find(bank).Error
 }
 
-// GetAllForBanksID :returns all objects of specifeid tenantID
-func (repository *GormRepository) GetAllForBanksID(uow *UnitOfWork, out interface{}, input interface{}, preloadAssociations []string) error {
-	db := uow.DB
-	for _, association := range preloadAssociations {
-		db = db.Preload(association)
-	}
-	return db.Where("id= ?", input).Find(out).Error
-}
-
-// GetAllForUsersID returns all objects of specifeid tenantID
-func (repository *GormRepository) GetAllForUsersID(uow *UnitOfWork, out interface{}, input interface{}, preloadAssociations []string) error {
+//GetAllForUserID :  GetAllForUsersID returns all bank accounts of specifeid tenantID
+func (repository *GormRepository) GetAllForUserID(uow *UnitOfWork, out interface{}, input interface{}, preloadAssociations []string) error {
 	db := uow.DB
 	for _, association := range preloadAssociations {
 		db = db.Preload(association)
@@ -113,3 +95,21 @@ func (repository *GormRepository) Update(uow *UnitOfWork, entity interface{}) er
 func (repository *GormRepository) Delete(uow *UnitOfWork, entity interface{}) error {
 	return uow.DB.Delete(entity).Error
 }
+
+// // Get a record by using UserId
+// func (repository *GormRepository) GetByUserID(uow *UnitOfWork, out interface{}, id interface{}, preloadAssociations []string) error {
+// 	db := uow.DB
+// 	for _, association := range preloadAssociations {
+// 		db = db.Preload(association)
+// 	}
+// 	return db.Find(out, "user_id = ?", id).Error
+// }
+
+// // GetAllForBanksID :returns all objects of specifeid tenantID
+// func (repository *GormRepository) GetAllForBanksID(uow *UnitOfWork, out interface{}, input interface{}, preloadAssociations []string) error {
+// 	db := uow.DB
+// 	for _, association := range preloadAssociations {
+// 		db = db.Preload(association)
+// 	}
+// 	return db.Where("id= ?", input).Find(out).Error
+// }

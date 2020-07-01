@@ -38,9 +38,12 @@ func (service *BankAccountService) AddBankAccount(model *models.Bank) error {
 }
 
 //DeleteBankAccount :
-func (service *BankAccountService) DeleteBankAccount(input interface{}) error {
+func (service *BankAccountService) DeleteBankAccount(id interface{}) error {
+	bank := &models.Bank{}
+	pow := make([]string, 0)
 	uow := repository.NewUnitOfWork(service.DB, false)
-	if err := service.Repository.Delete(uow, input); err != nil {
+	service.Repository.GetByID(uow, &bank, id, pow)
+	if err := service.Repository.Delete(uow, &bank); err != nil {
 		uow.Complete()
 	}
 	uow.Commit()
@@ -60,11 +63,11 @@ func (service *BankAccountService) GetBankByID(input interface{}, id interface{}
 	return nil
 }
 
-//GetBankByUserID : Will get all bank accounts linked by user_ID!
+//GetBankbyUserID : Will get all bank accounts linked by user_ID!
 func (service *BankAccountService) GetBankbyUserID(input interface{}, id interface{}) error {
 	pod := make([]string, 0)
 	uow := repository.NewUnitOfWork(service.DB, false)
-	if err := service.Repository.GetByUserID(uow, input, id, pod); err != nil {
+	if err := service.Repository.GetAllForUserID(uow, input, id, pod); err != nil {
 		return err
 
 	}
