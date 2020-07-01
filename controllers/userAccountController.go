@@ -113,7 +113,8 @@ func (uas *UserAccountController) GetUserByID(w http.ResponseWriter, r *http.Req
 	// path := path.Base(r.URL.String())
 	// id, _ := uuid.FromString(path)
 	val := mux.Vars(r)
-	id := val["id"]
+	tmp := val["id"]
+	id, _ := uuid.FromString(tmp)
 	user := models.User{}
 	uas.service.GetUserByID(&user, id)
 	// each user

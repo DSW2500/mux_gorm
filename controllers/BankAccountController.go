@@ -38,7 +38,10 @@ func (bac *BankAccountController) RegisterRoutes(router *mux.Router) {
 func (bac *BankAccountController) GetAllBankAccounts(w http.ResponseWriter, r *http.Request) {
 
 	content := []model.Bank{}
-	bac.service.GetAllBankAccounts(&content)
+	if err := bac.service.GetAllBankAccounts(&content); err != nil {
+		x := []byte(err.Error())
+		w.Write(x)
+	}
 	// fmt.Println(content)
 	web.RespondJSON(&w, http.StatusOK, content)
 
@@ -51,7 +54,8 @@ func (bac *BankAccountController) GetBankAccountFromUser(w http.ResponseWriter, 
 	// file = path.Base(file)                     //extracts ID of user
 	// id, _ := uuid.FromString(file)
 	val := mux.Vars(r)
-	id := val["userID"]
+	tmp := val["userID"]
+	id, _ := uuid.FromString(tmp)
 	user := model.User{}
 	uas := &service.UserAccountService{
 		DB:         bac.service.DB,
@@ -60,8 +64,11 @@ func (bac *BankAccountController) GetBankAccountFromUser(w http.ResponseWriter, 
 	uas.GetUserByID(&user, id)
 	// each user
 	banks := []model.Bank{}
-	bankUID, _ := uuid.FromString(id)
-	bac.service.GetBankbyUserID(&banks, bankUID)
+	bankUID := id
+	if err := bac.service.GetBankbyUserID(&banks, bankUID); err != nil {
+		x := []byte(err.Error())
+		w.Write(x)
+	}
 
 	web.RespondJSON(&w, http.StatusOK, banks)
 }
@@ -77,9 +84,46 @@ func (bac *BankAccountController) GetBankAccountByID(w http.ResponseWriter, r *h
 	// each user
 	banks := []model.Bank{}
 	bankUID, _ := uuid.FromString(id)
-	bac.service.GetBankByID(&banks, bankUID)
+	if err := bac.service.GetBankByID(&banks, bankUID); err != nil {
+		x := []byte(err.Error())
+		w.Write(x)
+	}
 
 	web.RespondJSON(&w, http.StatusOK, banks)
+}
+
+//CreateBankData :
+func (bac *BankAccountController) CreateBankData(w http.ResponseWriter, r *http.Request) {
+	bank := model.Bank{}
+	err := web.UnmarshalJSON(r, &bank)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = bac.service.AddBankAccount(&bank)
+	if err != nil {
+		x := []byte(err.Error())
+		w.Write(x)
+	}
+}
+
+//DeleteBankAccount :
+func (bac *BankAccountController) DeleteBankAccount(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	tmp := vars["bankID"]
+	id, _ := uuid.FromString(tmp)
+	// user := model.User{}
+	// err := UnmarshalJSON(r, &user)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	err := bac.service.DeleteBankAccount(id)
+	if err != nil {
+		x := []byte(err.Error())
+		w.Write(x)
+
+	}
 }
 
 // //GetBankAccountFromUserID : gets all bank accounts for a specified user
@@ -105,37 +149,3 @@ func (bac *BankAccountController) GetBankAccountByID(w http.ResponseWriter, r *h
 // bac.service.
 // 	web.RespondJSON(&w, http.StatusOK, banks)
 // }
-
-//CreateBankData :
-func (bac *BankAccountController) CreateBankData(w http.ResponseWriter, r *http.Request) {
-	bank := model.Bank{}
-	err := web.UnmarshalJSON(r, &bank)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = bac.service.AddBankAccount(&bank)
-	if err != nil {
-		fmt.Println(err)
-
-	}
-}
-
-//DeleteBankAccount :
-func (bac *BankAccountController) DeleteBankAccount(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	tmp := vars["bankID"]
-	id, _ := uuid.FromString(tmp)
-	// user := model.User{}
-	// err := UnmarshalJSON(r, &user)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	err := bac.service.DeleteBankAccount(id)
-	if err != nil {
-		x := []byte(err.Error())
-		w.Write(x)
-
-	}
-}

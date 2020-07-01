@@ -1,6 +1,7 @@
 package service
 
 import (
+	"gorm/checkerror"
 	models "gorm/models"
 	"gorm/repository"
 
@@ -24,6 +25,10 @@ func NewUserAccountService(db *gorm.DB, repo *repository.GormRepository) *UserAc
 
 //AddUserAccount :
 func (service *UserAccountService) AddUserAccount(model *models.User) error {
+	errorCheck := checkerror.NewErrorType()
+	if err := errorCheck.CheckUserNameError(model); err != nil {
+		return err
+	}
 	uow := repository.NewUnitOfWork(service.DB, false)
 	model.ID = uuid.NewV4()
 	bank := &BankAccountService{
@@ -41,7 +46,7 @@ func (service *UserAccountService) AddUserAccount(model *models.User) error {
 		return err
 	}
 	uow.Commit()
-	return err
+	return nil
 }
 
 //GetAllUserAccounts   :Will get all accounts!
@@ -60,6 +65,10 @@ func (service *UserAccountService) GetAllUserAccounts(user *[]models.User) error
 
 //DeleteUserAccount :
 func (service *UserAccountService) DeleteUserAccount(id uuid.UUID) error {
+	errorCheck := checkerror.NewErrorType()
+	if err := errorCheck.CheckIDError(id); err != nil {
+		return err
+	}
 	var user models.User
 	user.ID = id
 	uow := repository.NewUnitOfWork(service.DB, false)
@@ -82,8 +91,14 @@ func (service *UserAccountService) DeleteUserAccount(id uuid.UUID) error {
 }
 
 //GetUserByID : Gets user by ID
-func (service *UserAccountService) GetUserByID(input interface{}, id interface{}) error {
-
+func (service *UserAccountService) GetUserByID(input *models.User, id uuid.UUID) error {
+	errorCheck := checkerror.NewErrorType()
+	if err := errorCheck.CheckUserNameError(input); err != nil {
+		return err
+	}
+	if err := errorCheck.CheckIDError(id); err != nil {
+		return err
+	}
 	uow := repository.NewUnitOfWork(service.DB, false)
 	if err := service.Repository.GetByID(uow, input, id, []string{}); err != nil {
 		return err
@@ -95,6 +110,10 @@ func (service *UserAccountService) GetUserByID(input interface{}, id interface{}
 
 //UpdateUser :
 func (service *UserAccountService) UpdateUser(input *models.User) error {
+	errorCheck := checkerror.NewErrorType()
+	if err := errorCheck.CheckUserNameError(input); err != nil {
+		return err
+	}
 	uow := repository.NewUnitOfWork(service.DB, false)
 	if err := service.Repository.Update(uow, input); err != nil {
 		uow.Complete()

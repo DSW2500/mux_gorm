@@ -1,6 +1,7 @@
 package service
 
 import (
+	"gorm/checkerror"
 	models "gorm/models"
 	"gorm/repository"
 
@@ -26,6 +27,10 @@ func NewBankAccountService(db *gorm.DB, repository *repository.GormRepository) *
 
 //AddBankAccount :
 func (service *BankAccountService) AddBankAccount(model *models.Bank) error {
+	errorCheck := checkerror.NewErrorType()
+	if err := errorCheck.CheckBankNameError(model); err != nil {
+		return err
+	}
 	uow := repository.NewUnitOfWork(service.DB, false)
 	model.ID = uuid.NewV4()
 	err := service.Repository.Add(uow, model)
